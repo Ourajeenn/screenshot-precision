@@ -120,7 +120,8 @@ export function segment(g: Gray, p: Params): { mask: Uint8Array; threshold: numb
     for (const v of g.data) { s += v; s2 += v * v; }
     const m = s / g.data.length;
     const sd = Math.sqrt(Math.max(0, s2 / g.data.length - m * m));
-    threshold = m - p.sigmaK * sd;
+    // A flat image (σ < 1 grey level) has no outlier pixels.
+    threshold = sd < 1 ? -Infinity : m - p.sigmaK * sd;
   }
   const mask = new Uint8Array(g.data.length);
   for (let i = 0; i < mask.length; i++) mask[i] = g.data[i] <= threshold ? 1 : 0;
