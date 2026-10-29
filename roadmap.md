@@ -1,0 +1,2 @@
+- [ ] Corriger l'import d'images
+- [ ] GitHub: expliquer la synchro (repo existant impossible)
