@@ -1,4 +1,5 @@
 import type { Control } from "./store";
+import { KIND_LABELS } from "./vision";
 
 export async function exportPDF(c: Control) {
   const { jsPDF } = await import("jspdf");
@@ -30,7 +31,8 @@ export async function exportPDF(c: Control) {
   doc.setFontSize(9);
   y += 6;
   for (const r of c.regions.slice(0, 15)) {
-    doc.text(`#${r.id}  x=${r.x} y=${r.y}  ${r.width}×${r.height} px  surface ${r.area} px²`, 16, y);
+    const kind = r.kind ? KIND_LABELS[r.kind] : "—";
+    doc.text(`#${r.id}  ${kind}  x=${r.x} y=${r.y}  ${r.width}×${r.height} px  surface ${r.area} px²`, 16, y);
     y += 4.5;
   }
   if (c.regions.length > 15) { doc.text(`… ${c.regions.length - 15} autres`, 16, y); y += 4.5; }

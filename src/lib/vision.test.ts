@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { analyze, DEFAULT_PARAMS, evaluate, iou, type Gray } from "./vision";
+import { analyze, classify, DEFAULT_PARAMS, evaluate, iou, type Gray } from "./vision";
 import { toCSV, validateControl } from "./store";
 
 function synth(w: number, h: number, spots: { x: number; y: number; s: number }[]): Gray {
@@ -24,6 +24,26 @@ describe("detection", () => {
   it("is reproducible", () => {
     const g = synth(150, 150, [{ x: 30, y: 30, s: 12 }]);
     expect(analyze(g, DEFAULT_PARAMS).regions).toEqual(analyze(g, DEFAULT_PARAMS).regions);
+  });
+});
+
+describe("classification", () => {
+  it("labels a thin elongated zone as a crack", () => {
+    expect(classify({ circularity: 0.1, aspect: 8, contrast: 80, width: 60, height: 5 })).toBe("fissure");
+  });
+  it("labels a moderately elongated zone as a scratch", () => {
+    expect(classify({ circularity: 0.3, aspect: 3, contrast: 60, width: 40, height: 13 })).toBe("rayure");
+  });
+  it("labels a dark round zone as a burn mark", () => {
+    expect(classify({ circularity: 0.8, aspect: 1.1, contrast: 90, width: 20, height: 20 })).toBe("brulure");
+  });
+  it("labels a faint round zone as a pit", () => {
+    expect(classify({ circularity: 0.8, aspect: 1.1, contrast: 25, width: 20, height: 20 })).toBe("cavite");
+  });
+  it("labels an analyzed dark square", () => {
+    const r = analyze(synth(150, 150, [{ x: 30, y: 30, s: 14 }]), DEFAULT_PARAMS).regions[0]!;
+    expect(r.kind).toBeDefined();
+    expect(["brulure", "cavite", "tache"]).toContain(r.kind);
   });
 });
 

@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { analyze, DEFAULT_PARAMS, toGray, type Params, type Region } from "@/lib/vision";
+import { analyze, DEFAULT_PARAMS, KIND_LABELS, toGray, type Params, type Region } from "@/lib/vision";
 import { annotate, grayToDataURL, loadImage, thumb, type LoadedImage } from "@/lib/imageio";
 import { APP_VERSION, DECISIONS, saveControl, validateControl, type Decision } from "@/lib/store";
 
@@ -162,14 +162,22 @@ function Inspection() {
                   <p className="mt-1 font-mono text-xs text-muted-foreground">
                     seuil {Number.isFinite(result.threshold) ? result.threshold.toFixed(1) : "—"} · {result.ms.toFixed(0)} ms
                   </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    La description est une hypothèse visuelle (forme, contraste) — elle ne certifie pas la nature du défaut.
+                  </p>
                   <div className="mt-3 max-h-64 overflow-auto">
                     <table className="w-full font-mono text-xs">
-                      <thead className="text-muted-foreground"><tr><th className="text-left">#</th><th>x</th><th>y</th><th>l</th><th>h</th><th className="text-right">px²</th></tr></thead>
+                      <thead className="text-muted-foreground"><tr><th className="text-left">#</th><th className="text-left">Description probable</th><th>x</th><th>y</th><th>l</th><th>h</th><th className="text-right">px²</th></tr></thead>
                       <tbody>
                         {result.regions.map((r) => (
-                          <tr key={r.id} className="border-t border-border text-center"><td className="text-left text-primary">{r.id}</td><td>{r.x}</td><td>{r.y}</td><td>{r.width}</td><td>{r.height}</td><td className="text-right">{r.area}</td></tr>
+                          <tr key={r.id} className="border-t border-border text-center">
+                            <td className="text-left text-primary">{r.id}</td>
+                            <td className="text-left font-sans">{KIND_LABELS[r.kind]}</td>
+                            <td>{r.x}</td><td>{r.y}</td><td>{r.width}</td><td>{r.height}</td>
+                            <td className="text-right">{r.area}</td>
+                          </tr>
                         ))}
-                        {!result.regions.length && <tr><td colSpan={6} className="py-3 text-center text-muted-foreground">Aucune zone suspecte détectée</td></tr>}
+                        {!result.regions.length && <tr><td colSpan={7} className="py-3 text-center text-muted-foreground">Aucune zone suspecte détectée</td></tr>}
                       </tbody>
                     </table>
                   </div>
