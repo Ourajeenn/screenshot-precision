@@ -249,7 +249,7 @@ export function analyze(g: Gray, p: Params) {
   const pre = preprocess(g, p);
   const seg = segment(pre, p);
   const mask = p.opening ? opening(seg.mask, g.w, g.h) : seg.mask;
-  const regions = findRegions(mask, g.w, g.h, p.minArea);
+  const regions = findRegions(mask, g.w, g.h, p.minArea, pre.data);
   return { pre, regions, threshold: seg.threshold, ms: performance.now() - t0 };
 }
 

@@ -81,7 +81,7 @@ export function annotate(src: HTMLCanvasElement, regions: Region[], maxSide = 0)
     ctx.strokeStyle = "#f5b301";
     ctx.strokeRect(r.x * s, r.y * s, r.width * s, r.height * s);
     ctx.fillStyle = "#f5b301";
-    ctx.fillText(`#${r.id}`, r.x * s, Math.max(lw * 6, r.y * s - lw));
+    ctx.fillText(`#${r.id} ${r.kind ?? ""}`, r.x * s, Math.max(lw * 6, r.y * s - lw));
   }
   return c.toDataURL("image/jpeg", 0.85);
 }
