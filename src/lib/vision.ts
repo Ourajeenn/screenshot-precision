@@ -167,19 +167,20 @@ export function opening(mask: Uint8Array, w: number, h: number): Uint8Array {
   return morph(morph(mask, w, h, true), w, h, false);
 }
 
-/** 8-connected components → bounding boxes, filtered by min area. */
-export function findRegions(mask: Uint8Array, w: number, h: number, minArea: number): Region[] {
+/** 8-connected components → bounding boxes + shape stats, filtered by min area. */
+export function findRegions(mask: Uint8Array, w: number, h: number, minArea: number, gray?: Float32Array): Region[] {
   const seen = new Uint8Array(mask.length);
   const regions: Region[] = [];
   const stack: number[] = [];
   for (let i = 0; i < mask.length; i++) {
     if (!mask[i] || seen[i]) continue;
-    let minX = w, minY = h, maxX = 0, maxY = 0, area = 0;
+    let minX = w, minY = h, maxX = 0, maxY = 0, area = 0, sum = 0;
     stack.push(i); seen[i] = 1;
     while (stack.length) {
       const j = stack.pop()!;
       const x = j % w, y = (j - x) / w;
       area++;
+      if (gray) sum += gray[j]!;
       if (x < minX) minX = x; if (x > maxX) maxX = x;
       if (y < minY) minY = y; if (y > maxY) maxY = y;
       for (let dy = -1; dy <= 1; dy++)
@@ -190,11 +191,50 @@ export function findRegions(mask: Uint8Array, w: number, h: number, minArea: num
           if (mask[k] && !seen[k]) { seen[k] = 1; stack.push(k); }
         }
     }
-    if (area >= minArea) regions.push({ id: 0, x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1, area });
+    if (area < minArea) continue;
+    const bw = maxX - minX + 1, bh = maxY - minY + 1;
+    // Perimeter: region edges touching background (4-neighborhood).
+    let per = 0;
+    for (let y = minY; y <= maxY; y++)
+      for (let x = minX; x <= maxX; x++) {
+        if (!mask[y * w + x]) continue;
+        if (x === 0 || !mask[y * w + x - 1]) per++;
+        if (x === w - 1 || !mask[y * w + x + 1]) per++;
+        if (y === 0 || !mask[(y - 1) * w + x]) per++;
+        if (y === h - 1 || !mask[(y + 1) * w + x]) per++;
+      }
+    const circularity = Math.min(1, (4 * Math.PI * area) / (per * per));
+    const aspect = Math.max(bw, bh) / Math.min(bw, bh);
+    // Contrast: mean gray inside the region vs a 4px ring around its box.
+    let contrast = 0;
+    if (gray) {
+      const m = 4;
+      const rx0 = Math.max(0, minX - m), ry0 = Math.max(0, minY - m);
+      const rx1 = Math.min(w - 1, maxX + m), ry1 = Math.min(h - 1, maxY + m);
+      let ringSum = 0, ringN = 0;
+      for (let y = ry0; y <= ry1; y++)
+        for (let x = rx0; x <= rx1; x++) {
+          if (x >= minX && x <= maxX && y >= minY && y <= maxY) continue;
+          ringSum += gray[y * w + x]!; ringN++;
+        }
+      contrast = ringN ? ringSum / ringN - sum / area : 0;
+    }
+    regions.push({ id: 0, x: minX, y: minY, width: bw, height: bh, area, circularity, aspect, contrast, kind: "tache" });
   }
   regions.sort((a, b) => b.area - a.area);
   regions.forEach((r, i) => (r.id = i + 1));
+  for (const r of regions) r.kind = classify(r);
   return regions;
+}
+
+/** Visual guess from shape + contrast. Deterministic, no learning. */
+export function classify(r: Pick<Region, "circularity" | "aspect" | "contrast" | "width" | "height">): RegionKind {
+  const thin = Math.min(r.width, r.height);
+  if (r.aspect >= 5 || (r.aspect >= 3 && thin <= 10)) return "fissure";
+  if (r.aspect >= 2.5) return "rayure";
+  if (r.circularity >= 0.55) return r.contrast >= 50 ? "brulure" : "cavite";
+  if (r.contrast < 15) return "decoloration";
+  return "tache";
 }
 
 export function preprocess(g: Gray, p: Params): Gray {
