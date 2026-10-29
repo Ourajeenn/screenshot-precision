@@ -33,7 +33,26 @@ export interface Region {
   width: number;
   height: number;
   area: number;
+  /** 4π·area/perimeter² : 1 = disque parfait, proche de 0 = forme étirée/découpée */
+  circularity: number;
+  /** rapport long côté / petit côté du rectangle englobant (>= 1) */
+  aspect: number;
+  /** écart moyen entre la zone et le fond environnant (niveaux de gris, positif = plus sombre) */
+  contrast: number;
+  /** description visuelle probable, issue de classify() */
+  kind: RegionKind;
 }
+
+export type RegionKind = "fissure" | "rayure" | "cavite" | "brulure" | "decoloration" | "tache";
+
+export const KIND_LABELS: Record<RegionKind, string> = {
+  fissure: "Fissure / fente fine",
+  rayure: "Rayure / trace linéaire",
+  cavite: "Cavité / piqûre",
+  brulure: "Marque sombre / brûlure",
+  decoloration: "Décoloration",
+  tache: "Tache / zone sombre",
+};
 
 export function toGray(rgba: Uint8ClampedArray, w: number, h: number): Gray {
   const data = new Float32Array(w * h);
