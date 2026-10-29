@@ -1,4 +1,5 @@
 import type { Control } from "./store";
+import { KIND_LABELS } from "./vision";
 
 export async function exportPDF(c: Control) {
   const { jsPDF } = await import("jspdf");

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { analyze, DEFAULT_PARAMS, evaluate, iou, type Gray } from "./vision";
+import { analyze, classify, DEFAULT_PARAMS, evaluate, iou, type Gray } from "./vision";
 import { toCSV, validateControl } from "./store";
 
 function synth(w: number, h: number, spots: { x: number; y: number; s: number }[]): Gray {
