@@ -27,6 +27,26 @@ describe("detection", () => {
   });
 });
 
+describe("classification", () => {
+  it("labels a thin elongated zone as a crack", () => {
+    expect(classify({ circularity: 0.1, aspect: 8, contrast: 80, width: 60, height: 5 })).toBe("fissure");
+  });
+  it("labels a moderately elongated zone as a scratch", () => {
+    expect(classify({ circularity: 0.3, aspect: 3, contrast: 60, width: 40, height: 13 })).toBe("rayure");
+  });
+  it("labels a dark round zone as a burn mark", () => {
+    expect(classify({ circularity: 0.8, aspect: 1.1, contrast: 90, width: 20, height: 20 })).toBe("brulure");
+  });
+  it("labels a faint round zone as a pit", () => {
+    expect(classify({ circularity: 0.8, aspect: 1.1, contrast: 25, width: 20, height: 20 })).toBe("cavite");
+  });
+  it("labels an analyzed dark square", () => {
+    const r = analyze(synth(150, 150, [{ x: 30, y: 30, s: 14 }]), DEFAULT_PARAMS).regions[0]!;
+    expect(r.kind).toBeDefined();
+    expect(["brulure", "cavite", "tache"]).toContain(r.kind);
+  });
+});
+
 describe("evaluation", () => {
   it("computes IoU", () => {
     expect(iou({ x: 0, y: 0, width: 10, height: 10 }, { x: 5, y: 0, width: 10, height: 10 })).toBeCloseTo(1 / 3);
