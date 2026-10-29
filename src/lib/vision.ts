@@ -80,7 +80,7 @@ export function correctIllumination(g: Gray, r: number): Gray {
 
 export function equalize(g: Gray): Gray {
   const hist = new Array<number>(256).fill(0);
-  for (const v of g.data) hist[Math.round(v)]++;
+  for (const v of g.data) hist[Math.round(v)]!++;
   const cdf: number[] = [];
   let acc = 0;
   for (let i = 0; i < 256; i++) cdf[i] = acc += hist[i]!;
@@ -93,7 +93,7 @@ export function equalize(g: Gray): Gray {
 
 export function otsuThreshold(g: Gray): number {
   const hist = new Array<number>(256).fill(0);
-  for (const v of g.data) hist[Math.round(v)]++;
+  for (const v of g.data) hist[Math.round(v)]!++;
   const n = g.data.length;
   let sumAll = 0;
   for (let i = 0; i < 256; i++) sumAll += i * hist[i]!;
