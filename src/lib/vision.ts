@@ -38,7 +38,7 @@ export interface Region {
 export function toGray(rgba: Uint8ClampedArray, w: number, h: number): Gray {
   const data = new Float32Array(w * h);
   for (let i = 0; i < w * h; i++) {
-    data[i] = 0.299 * rgba[i * 4] + 0.587 * rgba[i * 4 + 1] + 0.114 * rgba[i * 4 + 2];
+    data[i] = 0.299 * rgba[i * 4]! + 0.587 * rgba[i * 4 + 1]! + 0.114 * rgba[i * 4 + 2]!;
   }
   return { w, h, data };
 }
@@ -50,12 +50,12 @@ function boxPass(src: Float32Array, w: number, h: number, r: number, horizontal:
   for (let l = 0; l < lines; l++) {
     const idx = (k: number) => (horizontal ? l * w + k : k * w + l);
     let sum = 0;
-    for (let k = -r; k <= r; k++) sum += src[idx(Math.min(len - 1, Math.max(0, k)))];
+    for (let k = -r; k <= r; k++) sum += src[idx(Math.min(len - 1, Math.max(0, k)))]!;
     for (let k = 0; k < len; k++) {
       out[idx(k)] = sum / (2 * r + 1);
       const add = Math.min(len - 1, k + r + 1);
       const rem = Math.max(0, k - r);
-      sum += src[idx(add)] - src[idx(rem)];
+      sum += src[idx(add)]! - src[idx(rem)]!;
     }
   }
   return out;
@@ -74,36 +74,36 @@ export function blur(g: Gray, r: number): Gray {
 export function correctIllumination(g: Gray, r: number): Gray {
   const bg = blur(g, r);
   const data = new Float32Array(g.data.length);
-  for (let i = 0; i < data.length; i++) data[i] = Math.min(255, Math.max(0, g.data[i] - bg.data[i] + 128));
+  for (let i = 0; i < data.length; i++) data[i] = Math.min(255, Math.max(0, g.data[i]! - bg.data[i]! + 128));
   return { w: g.w, h: g.h, data };
 }
 
 export function equalize(g: Gray): Gray {
-  const hist = new Array(256).fill(0);
+  const hist = new Array<number>(256).fill(0);
   for (const v of g.data) hist[Math.round(v)]++;
   const cdf: number[] = [];
   let acc = 0;
-  for (let i = 0; i < 256; i++) cdf[i] = acc += hist[i];
+  for (let i = 0; i < 256; i++) cdf[i] = acc += hist[i]!;
   const min = cdf.find((c) => c > 0) ?? 0;
   const n = g.data.length;
   const data = new Float32Array(n);
-  for (let i = 0; i < n; i++) data[i] = n === min ? g.data[i] : ((cdf[Math.round(g.data[i])] - min) / (n - min)) * 255;
+  for (let i = 0; i < n; i++) data[i] = n === min ? g.data[i]! : ((cdf[Math.round(g.data[i]!)]! - min) / (n - min)) * 255;
   return { w: g.w, h: g.h, data };
 }
 
 export function otsuThreshold(g: Gray): number {
-  const hist = new Array(256).fill(0);
+  const hist = new Array<number>(256).fill(0);
   for (const v of g.data) hist[Math.round(v)]++;
   const n = g.data.length;
   let sumAll = 0;
-  for (let i = 0; i < 256; i++) sumAll += i * hist[i];
+  for (let i = 0; i < 256; i++) sumAll += i * hist[i]!;
   let sumB = 0, wB = 0, best = 0, t = 0;
   for (let i = 0; i < 256; i++) {
-    wB += hist[i];
+    wB += hist[i]!;
     if (!wB) continue;
     const wF = n - wB;
     if (!wF) break;
-    sumB += i * hist[i];
+    sumB += i * hist[i]!;
     const mB = sumB / wB, mF = (sumAll - sumB) / wF;
     const v = wB * wF * (mB - mF) ** 2;
     if (v > best) { best = v; t = i; }
@@ -124,7 +124,7 @@ export function segment(g: Gray, p: Params): { mask: Uint8Array; threshold: numb
     threshold = sd < 1 ? -Infinity : m - p.sigmaK * sd;
   }
   const mask = new Uint8Array(g.data.length);
-  for (let i = 0; i < mask.length; i++) mask[i] = g.data[i] <= threshold ? 1 : 0;
+  for (let i = 0; i < mask.length; i++) mask[i] = g.data[i]! <= threshold ? 1 : 0;
   return { mask, threshold };
 }
 
@@ -136,7 +136,7 @@ function morph(mask: Uint8Array, w: number, h: number, erode: boolean): Uint8Arr
       for (let dy = -1; dy <= 1; dy++)
         for (let dx = -1; dx <= 1; dx++) {
           const yy = Math.min(h - 1, Math.max(0, y + dy)), xx = Math.min(w - 1, Math.max(0, x + dx));
-          const m = mask[yy * w + xx];
+          const m = mask[yy * w + xx]!;
           if (erode) v &= m; else v |= m;
         }
       out[y * w + x] = v;

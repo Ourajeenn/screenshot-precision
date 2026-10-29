@@ -59,7 +59,7 @@ export function grayToDataURL(g: Gray): string {
   const ctx = c.getContext("2d")!;
   const img = ctx.createImageData(g.w, g.h);
   for (let i = 0; i < g.data.length; i++) {
-    const v = g.data[i];
+    const v = g.data[i]!;
     img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v;
     img.data[i * 4 + 3] = 255;
   }
