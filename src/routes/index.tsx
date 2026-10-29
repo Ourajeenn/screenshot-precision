@@ -68,7 +68,7 @@ function Inspection() {
   function save() {
     if (!img || !result) return;
     const err = validateControl({ reference, decision: decision as Decision });
-    if (err || !decision) return toast.error(err ?? "Choisissez une décision.");
+    if (err || !decision) { toast.error(err ?? "Choisissez une décision."); return; }
     const id = crypto.randomUUID().slice(0, 8);
     saveControl({
       id,
@@ -202,7 +202,7 @@ function Inspection() {
   );
 }
 
-function Figure({ label, src }: { label: string; src?: string }) {
+function Figure({ label, src }: { label: string; src?: string | undefined }) {
   return (
     <figure className="overflow-hidden rounded-sm border border-border bg-card">
       <figcaption className="label-mono border-b border-border px-3 py-2">{label}</figcaption>
@@ -215,7 +215,7 @@ function Num({ label, v, min, max, step = 1, on }: { label: string; v: number; m
   return (
     <div className="space-y-2">
       <div className="flex justify-between text-sm"><span>{label}</span><span className="font-mono text-primary">{v}</span></div>
-      <Slider value={[v]} min={min} max={max} step={step} onValueChange={([x]) => on(x)} />
+      <Slider value={[v]} min={min} max={max} step={step} onValueChange={([x]) => on(x ?? v)} />
     </div>
   );
 }

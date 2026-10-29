@@ -34,7 +34,7 @@ function synthSet(n: number) {
     for (let i = 0; i < count; i++) {
       const s = 8 + Math.floor(r() * 20), x0 = Math.floor(r() * (w - s)), y0 = Math.floor(r() * (h - s));
       truth.push({ x: x0, y: y0, width: s, height: s });
-      for (let y = y0; y < y0 + s; y++) for (let x = x0; x < x0 + s; x++) data[y * w + x] -= 70;
+      for (let y = y0; y < y0 + s; y++) for (let x = x0; x < x0 + s; x++) data[y * w + x] = data[y * w + x]! - 70;
     }
     return { g: { w, h, data } as Gray, truth };
   });
