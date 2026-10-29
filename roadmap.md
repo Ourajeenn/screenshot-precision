@@ -1,0 +1,2 @@
+- [x] Corriger l'import d'images
+- [x] GitHub: expliquer la synchro

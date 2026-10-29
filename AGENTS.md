@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Image analysis runs entirely in the browser (src/lib/vision.ts, pure functions, tested); controls are stored append-only in localStorage — the spec requires fully local processing.
