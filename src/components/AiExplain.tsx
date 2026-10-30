@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function AiExplain({ getImage, zones, defaultMaterial }: { getImage: () => string; zones?: string; defaultMaterial?: string }) {
+export function AiExplain({ getImage, zones, defaultMaterial }: { getImage: () => string; zones?: string | undefined; defaultMaterial?: string | undefined }) {
   const [material, setMaterial] = useState(defaultMaterial ?? "");
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
