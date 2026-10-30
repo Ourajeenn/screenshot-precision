@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EvaluationRouteImport } from './routes/evaluation'
 import { Route as HistoriqueRouteImport } from './routes/historique'
+import { Route as ApiExplainRouteImport } from './routes/api/explain'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const HistoriqueRoute = HistoriqueRouteImport.update({
   path: '/historique',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiExplainRoute = ApiExplainRouteImport.update({
+  id: '/api/explain',
+  path: '/api/explain',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/evaluation': typeof EvaluationRoute
   '/historique': typeof HistoriqueRoute
+  '/api/explain': typeof ApiExplainRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/evaluation': typeof EvaluationRoute
   '/historique': typeof HistoriqueRoute
+  '/api/explain': typeof ApiExplainRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/evaluation': typeof EvaluationRoute
   '/historique': typeof HistoriqueRoute
+  '/api/explain': typeof ApiExplainRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/evaluation' | '/historique'
+  fullPaths: '/' | '/evaluation' | '/historique' | '/api/explain'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/evaluation' | '/historique'
-  id: '__root__' | '/' | '/evaluation' | '/historique'
+  to: '/' | '/evaluation' | '/historique' | '/api/explain'
+  id: '__root__' | '/' | '/evaluation' | '/historique' | '/api/explain'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   EvaluationRoute: typeof EvaluationRoute
   HistoriqueRoute: typeof HistoriqueRoute
+  ApiExplainRoute: typeof ApiExplainRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoriqueRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/explain': {
+      id: '/api/explain'
+      path: '/api/explain'
+      fullPath: '/api/explain'
+      preLoaderRoute: typeof ApiExplainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   EvaluationRoute: EvaluationRoute,
   HistoriqueRoute: HistoriqueRoute,
+  ApiExplainRoute: ApiExplainRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
