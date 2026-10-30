@@ -11,6 +11,7 @@ import { analyze, DEFAULT_PARAMS, KIND_LABELS, toGray, type Params, type Region 
 import { annotate, grayToDataURL, loadImage, thumb, type LoadedImage } from "@/lib/imageio";
 import { APP_VERSION, DECISIONS, saveControl, validateControl, type Decision } from "@/lib/store";
 import { CameraCapture } from "@/components/CameraCapture";
+import { AiExplain } from "@/components/AiExplain";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -186,6 +187,13 @@ function Inspection() {
                 </div>
               )}
             </div>
+          )}
+
+          {img && (
+            <AiExplain
+              getImage={() => thumb(img.canvas, 1280)}
+              zones={result?.regions.map((r) => `#${r.id} ${KIND_LABELS[r.kind]} à (${r.x},${r.y}) ${r.width}×${r.height}px`).join("\n")}
+            />
           )}
 
           {result && (

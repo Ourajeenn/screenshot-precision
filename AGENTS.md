@@ -9,4 +9,4 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Image analysis runs entirely in the browser (src/lib/vision.ts, pure functions, tested); controls are stored append-only in localStorage — the spec requires fully local processing.
+- Pixel analysis runs in the browser (src/lib/vision.ts, pure, tested); controls are stored append-only in localStorage. Only the opt-in "Explication par IA" panel sends a photo to the AI Gateway via the /api/explain server route — keep any other processing local.
