@@ -10,6 +10,7 @@ import { Slider } from "@/components/ui/slider";
 import { analyze, DEFAULT_PARAMS, KIND_LABELS, toGray, type Params, type Region } from "@/lib/vision";
 import { annotate, grayToDataURL, loadImage, thumb, type LoadedImage } from "@/lib/imageio";
 import { APP_VERSION, DECISIONS, saveControl, validateControl, type Decision } from "@/lib/store";
+import { CameraCapture } from "@/components/CameraCapture";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -109,6 +110,7 @@ function Inspection() {
           <div className="space-y-2">
             <p className="label-mono">A · Image</p>
             <Input type="file" accept=".jpg,.jpeg,.png" onChange={(e) => onFile(e.target.files?.[0])} />
+            <CameraCapture onCapture={onFile} />
             {error && <p className="text-sm text-destructive">{error}</p>}
             {img && (
               <dl className="grid grid-cols-2 gap-x-2 font-mono text-xs text-muted-foreground">
