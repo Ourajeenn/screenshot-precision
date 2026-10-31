@@ -14,7 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      materials: {
+        Row: {
+          ai_hints: string
+          created_at: string
+          description: string
+          id: string
+          name: string
+          params: Json
+        }
+        Insert: {
+          ai_hints?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name: string
+          params: Json
+        }
+        Update: {
+          ai_hints?: string
+          created_at?: string
+          description?: string
+          id?: string
+          name?: string
+          params?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
