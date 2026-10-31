@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchMaterials, type Material } from "@/lib/materials";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,10 @@ function Inspection() {
   const [reference, setReference] = useState("");
   const [comment, setComment] = useState("");
   const [decision, setDecision] = useState<Decision | null>(null);
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [mat, setMat] = useState<Material | null>(null);
+  useEffect(() => { fetchMaterials().then(setMaterials).catch(() => toast.error("Matériaux indisponibles.")); }, []);
+  function pickMaterial(m: Material) { setMat(m); setParams(m.params); }
   const set = <K extends keyof Params>(k: K, v: Params[K]) => setParams((p) => ({ ...p, [k]: v }));
 
   async function onFile(f: File | undefined) {
@@ -123,6 +128,16 @@ function Inspection() {
             )}
           </div>
 
+          <div className="space-y-2">
+            <p className="label-mono">Matériau</p>
+            <div className="grid grid-cols-1 gap-1">
+              {materials.map((m) => (
+                <Button key={m.id} size="sm" variant={mat?.id === m.id ? "default" : "secondary"} onClick={() => pickMaterial(m)}>{m.name}</Button>
+              ))}
+            </div>
+            {mat && <p className="text-xs text-muted-foreground">{mat.description} Réglages appliqués.</p>}
+          </div>
+
           <div className="space-y-4">
             <p className="label-mono">B · Prétraitement</p>
             <Num label="Flou (rayon)" v={params.blurRadius} min={0} max={8} on={(v) => set("blurRadius", v)} />
@@ -193,6 +208,8 @@ function Inspection() {
             <AiExplain
               getImage={() => thumb(img.canvas, 1280)}
               zones={result?.regions.map((r) => `#${r.id} ${KIND_LABELS[r.kind]} à (${r.x},${r.y}) ${r.width}×${r.height}px`).join("\n")}
+              defaultMaterial={mat?.name}
+              hints={mat?.aiHints}
             />
           )}
 
