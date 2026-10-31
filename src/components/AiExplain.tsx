@@ -1,10 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function AiExplain({ getImage, zones, defaultMaterial }: { getImage: () => string; zones?: string | undefined; defaultMaterial?: string | undefined }) {
+export function AiExplain({ getImage, zones, defaultMaterial, hints }: { getImage: () => string; zones?: string | undefined; defaultMaterial?: string | undefined; hints?: string | undefined }) {
   const [material, setMaterial] = useState(defaultMaterial ?? "");
+  useEffect(() => { if (defaultMaterial) setMaterial(defaultMaterial); }, [defaultMaterial]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +19,7 @@ export function AiExplain({ getImage, zones, defaultMaterial }: { getImage: () =
       const res = await fetch("/api/explain", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: getImage(), material, zones }),
+        body: JSON.stringify({ image: getImage(), material, zones, hints: material === defaultMaterial ? hints : undefined }),
         signal: ctrl.current.signal,
       });
       if (!res.ok || !res.body) {

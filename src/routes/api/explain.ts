@@ -8,7 +8,9 @@ const Body = z.object({
   image: z.string().startsWith("data:image/").max(8_000_000),
   material: z.string().trim().min(1).max(200),
   zones: z.string().max(4000).optional(),
+  hints: z.string().max(2000).optional(),
 });
+
 
 const INSTRUCTIONS = `Tu es un assistant d'aide au contrôle qualité visuel de matériaux industriels.
 À partir de la photo et du matériau indiqué, réponds en français, en Markdown concis :
@@ -26,7 +28,7 @@ export const Route = createFileRoute("/api/explain")({
         if (!apiKey) return Response.json({ error: "Service IA non configuré." }, { status: 500 });
         const parsed = Body.safeParse(await request.json().catch(() => null));
         if (!parsed.success) return Response.json({ error: "Photo ou matériau manquant." }, { status: 400 });
-        const { image, material, zones } = parsed.data;
+        const { image, material, zones, hints } = parsed.data;
         const runIdFetch = createLovableAiGatewayRunIdFetch(getLovableAiGatewayRunId(request));
         const provider = createOpenAI({
           baseURL: "https://ai.gateway.lovable.dev/v1",
@@ -44,7 +46,7 @@ export const Route = createFileRoute("/api/explain")({
             {
               role: "user",
               content: [
-                { type: "text", text: `Matériau inspecté : ${material}${zones ? `\nZones repérées par l'analyse locale :\n${zones}` : ""}` },
+                { type: "text", text: `Matériau inspecté : ${material}${hints ? `\nConsignes de l'usine pour ce matériau :\n${hints}` : ""}${zones ? `\nZones repérées par l'analyse locale :\n${zones}` : ""}` },
                 { type: "image", image: new URL(image) },
               ],
             },
