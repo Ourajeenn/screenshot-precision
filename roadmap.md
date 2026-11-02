@@ -1,4 +1,4 @@
 - [x] Corriger l'import d'images
 - [x] GitHub: expliquer la synchro
-- [ ] Envoyer le code dans le dépôt ABLA-PYTH (attend l'autorisation GitHub)
-- [ ] Analyse plus précise et plus détaillée des photos
+- [ ] Envoyer le code dans le dépôt ABLA-PYTH (en attente : connexion GitHub refusée)
+- [x] Analyse plus précise et plus détaillée des photos
