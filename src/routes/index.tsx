@@ -185,17 +185,18 @@ function Inspection() {
                   </p>
                   <div className="mt-3 max-h-64 overflow-auto">
                     <table className="w-full font-mono text-xs">
-                      <thead className="text-muted-foreground"><tr><th className="text-left">#</th><th className="text-left">Description probable</th><th>x</th><th>y</th><th>l</th><th>h</th><th className="text-right">px²</th></tr></thead>
+                      <thead className="text-muted-foreground"><tr><th className="text-left">#</th><th className="text-left">Description probable</th><th>x</th><th>y</th><th>l</th><th>h</th><th>px²</th><th title="Allongement">allong.</th><th title="Circularité 0–1">circ.</th><th className="text-right" title="Écart de gris avec l'entourage">contr.</th></tr></thead>
                       <tbody>
                         {result.regions.map((r) => (
                           <tr key={r.id} className="border-t border-border text-center">
                             <td className="text-left text-primary">{r.id}</td>
                             <td className="text-left font-sans">{KIND_LABELS[r.kind]}</td>
                             <td>{r.x}</td><td>{r.y}</td><td>{r.width}</td><td>{r.height}</td>
-                            <td className="text-right">{r.area}</td>
+                            <td>{r.area}</td><td>{r.aspect.toFixed(1)}</td><td>{r.circularity.toFixed(2)}</td>
+                            <td className="text-right">{r.contrast.toFixed(0)}</td>
                           </tr>
                         ))}
-                        {!result.regions.length && <tr><td colSpan={7} className="py-3 text-center text-muted-foreground">Aucune zone suspecte détectée</td></tr>}
+                        {!result.regions.length && <tr><td colSpan={10} className="py-3 text-center text-muted-foreground">Aucune zone suspecte détectée</td></tr>}
                       </tbody>
                     </table>
                   </div>
@@ -206,8 +207,8 @@ function Inspection() {
 
           {img && (
             <AiExplain
-              getImage={() => thumb(img.canvas, 1280)}
-              zones={result?.regions.map((r) => `#${r.id} ${KIND_LABELS[r.kind]} à (${r.x},${r.y}) ${r.width}×${r.height}px`).join("\n")}
+              getImage={() => thumb(img.canvas, 1600)}
+              zones={result ? `Image ${img.canvas.width}×${img.canvas.height}px.\n` + result.regions.map((r) => `#${r.id} ${KIND_LABELS[r.kind]} à (${r.x},${r.y}) ${r.width}×${r.height}px, surface ${r.area}px², allongement ${r.aspect.toFixed(1)}, circularité ${r.circularity.toFixed(2)}, contraste ${r.contrast.toFixed(0)}`).join("\n") : undefined}
               defaultMaterial={mat?.name}
               hints={mat?.aiHints}
             />
