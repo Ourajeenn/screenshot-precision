@@ -1,24 +1,28 @@
 # Screenshot Precision
 
-Implement exactly the screenshot and nothing else
+Prototype de contrôle visuel assisté pour l'inspection de matériaux. L'application analyse une image, signale des zones visuellement inhabituelles et permet à l'opérateur de documenter sa décision.
 
-This project was built with [Lovable](https://lovable.dev).
+## Fonctionnalités
 
-## Build with Lovable
+- Import d'images JPG/PNG ou capture depuis la caméra.
+- Prétraitement et détection paramétrable des zones suspectes.
+- Visualisation des résultats annotés et de leurs mesures.
+- Aide à l'interprétation par IA et historique des contrôles.
+- Enregistrement d'une référence, d'une décision opérateur et d'observations.
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/485d6aa5-39c4-4142-9773-2ed622c9df62).
+Les zones détectées sont des anomalies visuelles possibles, pas des défauts certifiés. La décision appartient à l'opérateur.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+## Stack
+
+React 19, TypeScript, TanStack Start, Vite, Supabase et Drizzle.
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Pré-requis : Node.js et Bun.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
 ```
+
+Tests : `bun run test`.
