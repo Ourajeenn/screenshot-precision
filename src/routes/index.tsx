@@ -208,7 +208,7 @@ function Inspection() {
           {img && (
             <AiExplain
               getImage={() => thumb(img.canvas, 1600)}
-              zones={result ? `Image ${img.canvas.width}×${img.canvas.height}px.\n` + result.regions.map((r) => `#${r.id} ${KIND_LABELS[r.kind]} à (${r.x},${r.y}) ${r.width}×${r.height}px, surface ${r.area}px², allongement ${r.aspect.toFixed(1)}, circularité ${r.circularity.toFixed(2)}, contraste ${r.contrast.toFixed(0)}`).join("\n") : undefined}
+              zones={result ? `Image ${img.canvas.width}×${img.canvas.height}px. ${result.regions.length} zone(s)${result.regions.length > 60 ? ", 60 plus grandes listées" : ""}.\n` + result.regions.slice(0, 60).map((r) => `#${r.id} ${KIND_LABELS[r.kind]} à (${r.x},${r.y}) ${r.width}×${r.height}px, surface ${r.area}px², allongement ${r.aspect.toFixed(1)}, circularité ${r.circularity.toFixed(2)}, contraste ${r.contrast.toFixed(0)}`).join("\n") : undefined}
               defaultMaterial={mat?.name}
               hints={mat?.aiHints}
             />

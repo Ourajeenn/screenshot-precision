@@ -7,7 +7,7 @@ import { createLovableAiGatewayRunIdFetch, getLovableAiGatewayRunId } from "@/li
 const Body = z.object({
   image: z.string().startsWith("data:image/").max(8_000_000),
   material: z.string().trim().min(1).max(200),
-  zones: z.string().max(4000).optional(),
+  zones: z.string().max(20000).optional(),
   hints: z.string().max(2000).optional(),
 });
 
